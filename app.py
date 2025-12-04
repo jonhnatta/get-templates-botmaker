@@ -49,6 +49,7 @@ df_data = []
 for template in templates:
     df_data.append({
         "Nome": template.get("name", ""),
+        "Mensagem": template.get("body", {}).get("text", ""),
         "Estado": template.get("state", ""),
         "Telefones": ", ".join(template.get("phoneLinesNumbers", [])),
         "Chatbot": template.get("botName", ""),
