@@ -10,7 +10,6 @@ load_dotenv()
 # Configuração da página
 st.set_page_config(
     page_title="BotMaker Templates",
-    page_icon="📱",
     layout="wide"
 )
 
@@ -45,7 +44,7 @@ if not templates:
     st.warning("Nenhum template encontrado ou erro ao carregar dados.")
     st.stop()
 
-# Criar DataFrame
+# Criar DataFrame apenas com os campos solicitados
 df_data = []
 for template in templates:
     df_data.append({
@@ -54,9 +53,6 @@ for template in templates:
         "phoneLinesNumbers": ", ".join(template.get("phoneLinesNumbers", [])),
         "botName": template.get("botName", ""),
         "category": template.get("category", ""),
-        "locale": template.get("locale", ""),
-        "optInImage": template.get("optInImage", ""),
-        "body": template.get("body", {}).get("text", ""),
         "requesterEmail": template.get("requesterEmail", ""),
     })
 
@@ -113,11 +109,9 @@ if selected_categories:
     df_filtered = df_filtered[df_filtered["category"].isin(selected_categories)]
 
 # Estatísticas
-col1, col2, col3, col4 = st.columns(4)
+col1, col2 = st.columns(2)
 col1.metric("Total de Templates", len(df))
 col2.metric("Templates Filtrados", len(df_filtered))
-col3.metric("Estados Únicos", df["state"].nunique())
-col4.metric("Categorias Únicas", df["category"].nunique())
 
 st.markdown("---")
 
@@ -132,11 +126,7 @@ st.subheader(f"📊 Templates ({len(df_filtered)} encontrados)")
 st.dataframe(
     df_filtered,
     use_container_width=True,
-    hide_index=True,
-    column_config={
-        "optInImage": st.column_config.ImageColumn("Imagem", width="small"),
-        "body": st.column_config.TextColumn("Corpo da Mensagem", width="large"),
-    }
+    hide_index=True
 )
 
 # Botão para exportar CSV
