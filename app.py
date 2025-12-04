@@ -9,12 +9,12 @@ load_dotenv()
 
 # Configuração da página
 st.set_page_config(
-    page_title="BotMaker Templates",
+    page_title="Botmaker WhatsApp Templates",
     layout="wide"
 )
 
 # Título da aplicação
-st.title("BotMaker WhatsApp Templates")
+st.title("Botmaker WhatsApp Templates")
 st.markdown("---")
 
 # Obter configurações do ambiente
@@ -33,7 +33,7 @@ def fetch_templates():
         data = response.json()
         return data.get("items", [])
     except requests.exceptions.RequestException as e:
-        st.error(f"❌ Erro ao buscar templates: {str(e)}")
+        st.error(f"Erro ao buscar templates: {str(e)}")
         return []
 
 # Buscar templates
@@ -48,12 +48,11 @@ if not templates:
 df_data = []
 for template in templates:
     df_data.append({
-        "name": template.get("name", ""),
-        "state": template.get("state", ""),
-        "phoneLinesNumbers": ", ".join(template.get("phoneLinesNumbers", [])),
-        "botName": template.get("botName", ""),
-        "category": template.get("category", ""),
-        "requesterEmail": template.get("requesterEmail", ""),
+        "Nome": template.get("name", ""),
+        "Estado": template.get("state", ""),
+        "Telefones": ", ".join(template.get("phoneLinesNumbers", [])),
+        "Chatbot": template.get("botName", ""),
+        "Categoria": template.get("category", ""),
     })
 
 df = pd.DataFrame(df_data)
@@ -62,51 +61,55 @@ df = pd.DataFrame(df_data)
 st.sidebar.header("Filtros")
 
 # Filtro por phoneLinesNumbers
-phone_numbers = df["phoneLinesNumbers"].unique()
+phone_numbers = df["Telefones"].unique()
 selected_phones = st.sidebar.multiselect(
     "Telefones",
     options=sorted(phone_numbers),
-    default=[]
+    default=[],
+    placeholder="Filtre por telefones"
 )
 
 # Filtro por name
-names = df["name"].unique()
+names = df["Nome"].unique()
 selected_names = st.sidebar.multiselect(
     "Nome do Template",
     options=sorted(names),
-    default=[]
+    default=[],
+    placeholder="Filtre por templates"
 )
 
 # Filtro por state
-states = df["state"].unique()
+states = df["Estado"].unique()
 selected_states = st.sidebar.multiselect(
     "Estado",
     options=sorted(states),
-    default=[]
+    default=[],
+    placeholder="Filtre por estado"
 )
 
 # Filtro por category
-categories = df["category"].unique()
+categories = df["Categoria"].unique()
 selected_categories = st.sidebar.multiselect(
     "Categoria",
     options=sorted(categories),
-    default=[]
+    default=[],
+    placeholder="Filtre por categoria"
 )
 
 # Aplicar filtros
 df_filtered = df.copy()
 
 if selected_phones:
-    df_filtered = df_filtered[df_filtered["phoneLinesNumbers"].isin(selected_phones)]
+    df_filtered = df_filtered[df_filtered["Telefones"].isin(selected_phones)]
 
 if selected_names:
-    df_filtered = df_filtered[df_filtered["name"].isin(selected_names)]
+    df_filtered = df_filtered[df_filtered["Nome"].isin(selected_names)]
 
 if selected_states:
-    df_filtered = df_filtered[df_filtered["state"].isin(selected_states)]
+    df_filtered = df_filtered[df_filtered["Estado"].isin(selected_states)]
 
 if selected_categories:
-    df_filtered = df_filtered[df_filtered["category"].isin(selected_categories)]
+    df_filtered = df_filtered[df_filtered["Categoria"].isin(selected_categories)]
 
 # Estatísticas
 col1, col2 = st.columns(2)
@@ -116,11 +119,11 @@ col2.metric("Templates Filtrados", len(df_filtered))
 st.markdown("---")
 
 # Botão para limpar filtros
-if st.sidebar.button("🔄 Limpar Filtros"):
+if st.sidebar.button("Limpar Filtros"):
     st.rerun()
 
 # Exibir tabela
-st.subheader(f"📊 Templates ({len(df_filtered)} encontrados)")
+st.subheader(f"Templates ({len(df_filtered)} encontrados)")
 
 # Configurar exibição da tabela
 st.dataframe(
@@ -136,7 +139,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     csv = df_filtered.to_csv(index=False).encode('utf-8-sig')
     st.download_button(
-        label="📥 Exportar CSV",
+        label="Exportar CSV",
         data=csv,
         file_name=f"botmaker_templates_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
         mime="text/csv",
