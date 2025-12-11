@@ -70,15 +70,6 @@ selected_phones = st.sidebar.multiselect(
     placeholder="Filtre por telefones"
 )
 
-# Filtro por name
-names = df["Nome"].unique()
-selected_names = st.sidebar.multiselect(
-    "Nome do Template",
-    options=sorted(names),
-    default=[],
-    placeholder="Filtre por templates"
-)
-
 # Filtro por state
 states = df["Estado"].unique()
 selected_states = st.sidebar.multiselect(
@@ -100,11 +91,11 @@ selected_categories = st.sidebar.multiselect(
 # Aplicar filtros
 df_filtered = df.copy()
 
+# Filtrar automaticamente templates que começam com "crm"
+df_filtered = df_filtered[df_filtered["Nome"].str.lower().str.startswith("crm")]
+
 if selected_phones:
     df_filtered = df_filtered[df_filtered["Telefones"].isin(selected_phones)]
-
-if selected_names:
-    df_filtered = df_filtered[df_filtered["Nome"].isin(selected_names)]
 
 if selected_states:
     df_filtered = df_filtered[df_filtered["Estado"].isin(selected_states)]
